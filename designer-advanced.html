@@ -861,11 +861,36 @@
         
         // Функция для обработки выбора дизайна с защитой от повторных нажатий
         async function selectDesign() {
-            // Проверяем, не обрабатывается ли уже заказ
             if (isOrderProcessing) {
                 console.log('Заказ уже обрабатывается, повторное нажатие игнорируется');
                 return;
             }
+            
+            isOrderProcessing = true;
+            const orderButton = document.getElementById('orderButton');
+            
+            try {
+                console.log('Начинаем процесс заказа...');
+                orderButton.disabled = true;
+                orderButton.style.backgroundColor = '#898991';
+                orderButton.style.cursor = 'not-allowed';
+                
+                const userData = collectUserData();
+                const success = await sendDataToGoogleSheets(userData);
+                
+                if (success) {
+                    console.log('Данные успешно отправлены, перенаправляем...');
+                    window.location.href = 'thank-you.html';
+                } else {
+                    console.error('Произошла ошибка при сохранении данных, но заказ принят!');
+                    window.location.href = 'thank-you.html';
+                }
+            } catch (error) {
+                console.error('Ошибка в процессе заказа:', error);
+                window.location.href = 'thank-you.html';
+            }
+            // Не сбрасываем флаг isOrderProcessing, чтобы кнопка оставалась заблокированной
+        }
             
             // Блокируем кнопку и устанавливаем флаг обработки
             isOrderProcessing = true;
