@@ -670,8 +670,16 @@
                 console.error('Ошибка в процессе заказа:', error);
                 window.location.href = 'thank-you.html';
             }
-            // Не сбрасываем флаг isOrderProcessing, чтобы кнопка оставалась заблокированной
+        // Не сбрасываем флаг isOrderProcessing, чтобы кнопка оставалась заблокированной
         }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCarousels();
+            updateStickerPreview();
+            updateOrderButton();
+        });
+    </script>
 
     <script>
         // Отправляем событие просмотра конструктора только при первом рендере
