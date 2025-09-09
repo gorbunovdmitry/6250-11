@@ -425,7 +425,7 @@
         </button>
     </div>
 
-    <script>
+        <script>
         // Current selections - simplified for 6250-1
         
         // Переменная для отслеживания состояния кнопки
@@ -440,11 +440,11 @@
             console.log('Current selections:', currentSelections);
         }
         
-        // Update order button price - fixed price for variant 11
+        // Update order button price based on thickness
         function updateOrderButton() {
             const button = document.getElementById('orderButton');
-            const price = '499';
-            button.textContent = `Заказать за ${price} ₽`;
+            button.textContent = `Заказать за 499 ₽`;
+        } ₽`;
         }
         
         // Simple sticker update for 6250-1 - only thickness selection
@@ -578,6 +578,39 @@
             }
             console.log('No exact match found');
             return null;
+        }
+
+        // Initialize carousels - simplified for 6250-1
+        function initCarousels() {
+            const thicknessCarousel = document.getElementById('thicknessCarousel');
+            
+            if (thicknessCarousel) {
+                thicknessCarousel.addEventListener('click', (e) => {
+                    const item = e.target.closest('.carousel-item');
+                    if (item) {
+                        // Remove selection from siblings
+                        const siblings = thicknessCarousel.querySelectorAll('.carousel-item');
+                        siblings.forEach(sibling => sibling.classList.remove('selected'));
+                        
+                        // Add selection to clicked item
+                        item.classList.add('selected');
+                        
+                        // Update current selection
+                        const value = item.dataset.value;
+                        currentSelections.thickness = value;
+                        
+                        console.log('Thickness selected:', value);
+                        
+                        // Update sticker preview and button
+                        updateStickerPreview();
+                        updateOrderButton();
+                    }
+                });
+            }
+        }
+
+
+
         // Update only sticker position
         function updateStickerPosition() {
             const preview = document.getElementById('stickerPreview');
@@ -604,49 +637,289 @@
         function goBack() {
             window.location.href = 'landing.html';
         }
+
+        // Функция для получения названия формы по значению
+        function getShapeName(shapeValue) {
+            const shapeNames = {
+                'rectangle': 'Прямоугольник',
+                'square': 'Квадрат', 
+                'circle': 'Круг',
+                'small-rectangle': 'Маленький прямоугольник',
+                'cutout': 'С вырезом',
+                'dzen': 'Дзынь стикер',
+                'potato': 'Картошка'
+            };
+            return shapeNames[shapeValue] || shapeValue;
+        }
+
+        // Функция для получения названия цвета по значению
+        function getColorName(colorValue) {
+            const colorNames = {
+                'red': 'Красный',
+                'green': 'Зеленый',
+                'gradient': 'Градиент',
+                'white': 'Белый',
+                'black': 'Черный'
+            };
+            return colorNames[colorValue] || colorValue;
+        }
+
+        // Функция для получения названия картинки по значению
+        function getPictureName(pictureValue) {
+            const pictureNames = {
+                'empty': 'Пустой',
+                'cat': 'Кот',
+                'slider-smile': 'Слайдер-смайл',
+                'robot-cat': 'Робокот',
+                'heart-smile': 'Смайл с сердцами',
+                'custom': 'Свой вариант',
+                'gingerbread': 'Пряничный человек',
+                'donut': 'Пончик',
+                'tape': 'Лента'
+            };
+            return pictureNames[pictureValue] || pictureValue;
+        }
+
+        // Функция для получения цены в зависимости от варианта и толщины
+        function getPrice(variant, thickness) {
+            const prices = {
+                1: 199,
+                2: 299,
+                3: 499,
+                4: 199,
+                5: 299,
+                6: 499,
+                7: 199,
+                8: 299,
+                9: 499,
+                10: thickness === 'thin' ? 990 : 690
+            };
+            return prices[variant] || 0;
+        }
+
+        // Функция для получения номера варианта
         
-        // Функция для обработки выбора дизайна
+
+        // Функция для сбора всех данных пользователя
         
-        // Функция для обработки выбора дизайна с защитой от повторных нажатий
-        async function selectDesign() {
-            if (isOrderProcessing) {
-                console.log('Заказ уже обрабатывается, повторное нажатие игнорируется');
-                return;
-            }
-            
-            isOrderProcessing = true;
-            const orderButton = document.getElementById('orderButton');
-            
-            try {
-                console.log('Начинаем процесс заказа...');
-                orderButton.disabled = true;
-                orderButton.style.backgroundColor = '#898991';
-                orderButton.style.cursor = 'not-allowed';
-                
-                const userData = collectUserData();
-                const success = await sendDataToGoogleSheets(userData);
-                
-                if (success) {
-                    console.log('Данные успешно отправлены, перенаправляем...');
-                    window.location.href = 'thank-you.html';
-                } else {
-                    console.error('Произошла ошибка при сохранении данных, но заказ принят!');
-                    window.location.href = 'thank-you.html';
-                }
-            } catch (error) {
-                console.error('Ошибка в процессе заказа:', error);
-                window.location.href = 'thank-you.html';
-            }
-        // Не сбрасываем флаг isOrderProcessing, чтобы кнопка оставалась заблокированной
+        // Функция для получения номера варианта
+        function getVariantNumber() {
+            return 10;
         }
         
-        // Initialize on page load
+        function collectUserData() {
+            const variant = getVariantNumber();
+            
+            const data = {
+                timestamp: new Date().toISOString(),
+                variant: variant,
+                thickness: currentSelections.thickness || 'thick',
+                shape: 'Нет выбора',
+                color: 'Нет выбора',
+                picture: 'Нет выбора',
+                price: getPrice(variant, currentSelections.thickness || 'thick')
+            };
+            
+            return data;
+        }
+
+        // Функция для отправки данных в Google Таблицу
+        // Функция для отправки данных в Google Таблицу
+        
         document.addEventListener('DOMContentLoaded', () => {
             initCarousels();
             updateStickerPreview();
             updateOrderButton();
         });
+    
+        // Функция для отправки данных через JSONP (обход CORS)
+        function sendDataToGoogleSheets(data) {
+            return new Promise((resolve, reject) => {
+                try {
+                    console.log('Отправляем данные через JSONP:', data);
+                    
+                    // Создаем уникальное имя функции для JSONP
+                    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                    
+                    // Создаем глобальную функцию для обработки ответа
+                    window[callbackName] = function(response) {
+                        // Удаляем функцию после использования
+                        delete window[callbackName];
+                        if (document.getElementById('jsonp_script')) {
+                            document.head.removeChild(document.getElementById('jsonp_script'));
+                        }
+                        
+                        if (response.success) {
+                            console.log('Данные успешно отправлены в Google Таблицу');
+                            resolve(true);
+                        } else {
+                            console.error('Ошибка при отправке данных:', response.error);
+                            reject(new Error(response.error));
+                        }
+                    };
+                    
+                    // Создаем script тег для JSONP запроса
+                    const script = document.createElement('script');
+                    script.id = 'jsonp_script';
+                    
+                    // URL Google Apps Script с параметрами
+                    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxenb1I-6wje2xrnrbHsfbYpyxxEJ65zodB2Gqhfek6rcb0A_IAyM-VsbGa08o3tc9M/exec';
+                    const params = new URLSearchParams({
+                        callback: callbackName,
+                        data: JSON.stringify(data)
+                    });
+                    
+                    script.src = GOOGLE_SCRIPT_URL + '?' + params.toString();
+                    script.onerror = function() {
+                        delete window[callbackName];
+                        if (document.getElementById('jsonp_script')) {
+                            document.head.removeChild(document.getElementById('jsonp_script'));
+                        }
+                        reject(new Error('Ошибка загрузки JSONP скрипта'));
+                    };
+                    
+                    document.head.appendChild(script);
+                    
+                } catch (error) {
+                    console.error('Ошибка при создании JSONP запроса:', error);
+                    reject(error);
+                }
+            });
+        }
+
+        // Функция для получения названия формы
+        function getShapeName(shape) {
+            const shapeNames = {
+                'small-rectangle': 'Маленький прямоугольник',
+                'square': 'Квадрат',
+                'rectangle': 'Прямоугольник',
+                'cutout': 'С вырезом',
+                'circle': 'Круг',
+                'dzen': 'Дзынь стикер',
+                'potato': 'Картошка'
+            };
+            return shapeNames[shape] || shape;
+        }
+
+        // Функция для получения названия цвета
+        function getColorName(color) {
+            const colorNames = {
+                'red': 'Красный',
+                'green': 'Зеленый',
+                'gradient': 'Градиент',
+                'white': 'Белый',
+                'black': 'Черный'
+            };
+            return colorNames[color] || color;
+        }
+
+        // Функция для получения названия картинки
+        function getPictureName(picture) {
+            const pictureNames = {
+                'empty': 'Пустой',
+                'cat': 'Кот',
+                'slider-smile': 'Слайдер-смайл',
+                'robot-cat': 'Робокот',
+                'heart-smile': 'Смайл с сердцами',
+                'custom': 'Своя картинка',
+                'gingerbread': 'Пряничный человек',
+                'donut': 'Пончик',
+                'ribbon': 'Лента'
+            };
+            return pictureNames[picture] || picture;
+        }
+
+        // Функция для получения цены
+        function getPrice(variant, thickness) {
+            const prices = {
+                1: 199, 4: 199, 7: 199,
+                2: 299, 5: 299, 8: 299,
+                3: 499, 6: 499, 9: 499,
+                10: thickness === 'thin' ? 990 : 690
+            };
+            return prices[variant] || 199;
+        }
+
+        // Функция для получения номера варианта
+        
+
+        // Функция для сбора данных пользователя
+        function collectUserData() {
+            const variant = getVariantNumber();
+            const price = getPrice(variant, currentSelections.thickness);
+            
+            return {
+                timestamp: new Date().toISOString(),
+                variant: variant,
+                thickness: currentSelections.thickness === 'thin' ? 'thin' : 'thick',
+                shape: 'Нет выбора',
+                color: 'Нет выбора',
+                picture: 'Нет выбора',
+                price: price
+            };
+        }
+
+        // Функция для обработки выбора дизайна
+        
+        // Функция для обработки выбора дизайна с защитой от повторных нажатий
+        async function selectDesign() {
+            // Проверяем, не обрабатывается ли уже заказ
+            if (isOrderProcessing) {
+                console.log('Заказ уже обрабатывается, повторное нажатие игнорируется');
+                return;
+            }
+            
+            // Блокируем кнопку и устанавливаем флаг обработки
+            isOrderProcessing = true;
+            const orderButton = document.getElementById('orderButton');
+            const originalText = orderButton.textContent;
+            
+            try {
+                console.log('Начинаем процесс заказа...');
+                
+                // Обновляем текст кнопки
+                orderButton.textContent = 'Обрабатываем заказ...';
+                orderButton.disabled = true;
+                orderButton.style.opacity = '0.6';
+                orderButton.style.cursor = 'not-allowed';
+                
+                // Собираем данные пользователя
+                const userData = collectUserData();
+                console.log('Собранные данные:', userData);
+                
+                // Отправляем данные в Google Таблицу
+                const success = await sendDataToGoogleSheets(userData);
+                
+                if (success) {
+                    console.log('Данные успешно отправлены, перенаправляем на страницу благодарности');
+                    // Обновляем текст кнопки перед перенаправлением
+                    orderButton.textContent = 'Заказ принят!';
+                    // Небольшая задержка для показа пользователю
+                    setTimeout(() => {
+                        window.location.href = 'thank-you.html';
+                    }, 1000);
+                } else {
+                    console.error('Ошибка при отправке данных, но заказ принят');
+                    // Обновляем текст кнопки
+                    orderButton.textContent = 'Заказ принят!';
+                    // Небольшая задержка для показа пользователю
+                    setTimeout(() => {
+                        window.location.href = 'thank-you.html';
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Ошибка при обработке заказа:', error);
+                // В случае ошибки все равно перенаправляем на страницу благодарности
+                orderButton.textContent = 'Заказ принят!';
+                setTimeout(() => {
+                    window.location.href = 'thank-you.html';
+                }, 1000);
+            }
+            // Не сбрасываем флаг isOrderProcessing, чтобы кнопка оставалась заблокированной
+        }
     </script>
+
+
 
     <script>
         // Отправляем событие просмотра конструктора только при первом рендере
