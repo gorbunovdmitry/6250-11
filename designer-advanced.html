@@ -577,48 +577,7 @@
                 }
             }
             console.log('No exact match found');
-            return null;        function initCarousels() {
-            const carousels = document.querySelectorAll('.carousel');
-            
-            carousels.forEach(carousel => {
-                carousel.addEventListener('click', (e) => {
-                    const item = e.target.closest('.carousel-item');
-                    if (item) {
-                        // Remove selection from siblings
-                        const siblings = carousel.querySelectorAll('.carousel-item');
-                        siblings.forEach(sibling => sibling.classList.remove('selected'));
-                        
-                        // Add selection to clicked item
-                        item.classList.add('selected');
-                        
-                        // Update current selection
-                        const carouselId = carousel.id;
-                        const value = item.dataset.value;
-                        
-                        console.log('Carousel clicked:', carouselId, 'Value:', value);
-                        
-                        if (carouselId === 'pictureCarousel') {
-                            currentSelections.picture = value;
-                        } else if (carouselId === 'colorCarousel') {
-                            currentSelections.color = value;
-                        } else if (carouselId === 'thicknessCarousel') {
-                            currentSelections.thickness = value;
-                        } else if (carouselId === 'shapeCarousel') {
-                            currentSelections.shape = value;
-                        }
-                        
-                        console.log('Updated selections:', currentSelections);
-                        
-                        // Always update sticker preview when any parameter changes
-                        updateStickerPreview();
-                        
-                        // Update order button price
-                        updateOrderButton();
-                    }
-                });
-            });
-        }
-
+            return null;
         // Update only sticker position
         function updateStickerPosition() {
             const preview = document.getElementById('stickerPreview');
@@ -686,7 +645,6 @@
             initCarousels();
             updateStickerPreview();
             updateOrderButton();
-        });
     </script>
 
     <script>
@@ -707,7 +665,6 @@
                     ym(96171108, 'reachGoal', '6250_click_buy_var11');
                 });
             }
-        });
     </script>
 </body>
 </html>
