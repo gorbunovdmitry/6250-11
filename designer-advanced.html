@@ -580,9 +580,11 @@
             return null;
         }
 
-        // Initialize carousels - simplified for 6250-1
-        function initCarousels() {
+                function initCarousels() {
             const thicknessCarousel = document.getElementById('thicknessCarousel');
+            const shapeCarousel = document.getElementById('shapeCarousel');
+            const colorCarousel = document.getElementById('colorCarousel');
+            const pictureCarousel = document.getElementById('pictureCarousel');
             
             if (thicknessCarousel) {
                 thicknessCarousel.addEventListener('click', (e) => {
@@ -607,10 +609,81 @@
                     }
                 });
             }
+            
+            if (shapeCarousel) {
+                shapeCarousel.addEventListener('click', (e) => {
+                    const item = e.target.closest('.carousel-item');
+                    if (item) {
+                        // Remove selection from siblings
+                        const siblings = shapeCarousel.querySelectorAll('.carousel-item');
+                        siblings.forEach(sibling => sibling.classList.remove('selected'));
+                        
+                        // Add selection to clicked item
+                        item.classList.add('selected');
+                        
+                        // Update current selection
+                        const value = item.dataset.value;
+                        currentSelections.shape = value;
+                        
+                        console.log('Shape selected:', value);
+                        
+                        // Update sticker preview and button
+                        updateStickerPreview();
+                        updateOrderButton();
+                    }
+                });
+            }
+            
+            if (colorCarousel) {
+                colorCarousel.addEventListener('click', (e) => {
+                    const item = e.target.closest('.carousel-item');
+                    if (item) {
+                        // Remove selection from siblings
+                        const siblings = colorCarousel.querySelectorAll('.carousel-item');
+                        siblings.forEach(sibling => sibling.classList.remove('selected'));
+                        
+                        // Add selection to clicked item
+                        item.classList.add('selected');
+                        
+                        // Update current selection
+                        const value = item.dataset.value;
+                        currentSelections.color = value;
+                        
+                        console.log('Color selected:', value);
+                        
+                        // Update sticker preview and button
+                        updateStickerPreview();
+                        updateOrderButton();
+                    }
+                });
+            }
+            
+            if (pictureCarousel) {
+                pictureCarousel.addEventListener('click', (e) => {
+                    const item = e.target.closest('.carousel-item');
+                    if (item) {
+                        // Remove selection from siblings
+                        const siblings = pictureCarousel.querySelectorAll('.carousel-item');
+                        siblings.forEach(sibling => sibling.classList.remove('selected'));
+                        
+                        // Add selection to clicked item
+                        item.classList.add('selected');
+                        
+                        // Update current selection
+                        const value = item.dataset.value;
+                        currentSelections.picture = value;
+                        
+                        console.log('Picture selected:', value);
+                        
+                        // Update sticker preview and button
+                        updateStickerPreview();
+                        updateOrderButton();
+                    }
+                });
+            }
         }
-
-
-
+                });
+            }
         // Update only sticker position
         function updateStickerPosition() {
             const preview = document.getElementById('stickerPreview');
